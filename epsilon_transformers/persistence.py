@@ -29,7 +29,7 @@ TorchModule = TypeVar("TorchModule", bound=torch.nn.modules.Module)
 # TODO: Generalize _state_dict_to_model_config into it's own base class so that it can handle different kinds of model classes
 
 class Persister(ABC):
-    collection_location: pathlib.Path | str
+    collection_location: pathlib.Path #| str
 
     def save_model(self, model: TorchModule, num_tokens_trained: int):
         ...
@@ -37,7 +37,7 @@ class Persister(ABC):
     def load_model(self, model_class: TorchModule, object_name: str) -> TorchModule:
         ...
     
-    def _save_overwrite_protection(self, object_name: pathlib.Path | str):
+    def _save_overwrite_protection(self, object_name: pathlib.Path):
         ...
 
 class LocalPersister(Persister):

@@ -1,6 +1,6 @@
 from io import BytesIO
 from typing import Literal
-from pydantic import BaseModel, model_validator
+from pydantic import BaseModel#, model_validator
 import pathlib
 import yaml
 import torch
@@ -73,7 +73,7 @@ class OptimizerConfig(Config):
 
 class PersistanceConfig(Config):
     location: Literal["local", "s3"]
-    collection_location: pathlib.Path | str
+    collection_location: pathlib.Path #| str
     checkpoint_every_n_tokens: int
 
     def init(self) -> Persister:
@@ -181,7 +181,7 @@ class TrainConfig(Config):
     seed: int
     verbose: bool
 
-    @model_validator(mode='after')
+#    @model_validator(mode='after')
     def validate_model(self):
         dataset_process = self.dataset.process
         if dataset_process:
