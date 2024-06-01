@@ -113,31 +113,39 @@ class ProcessDatasetConfig(Config):
 @dataclass
 class Log:
     train_loss: Optional[float]
+    train_n: Optional[int]
     test_loss: Optional[float]
+    test_n: Optional[int]
     config: "LoggingConfig"
 
     def reset(self):
         if self.config.train_loss:
             self.train_loss = 0.0
+            self.train_n = 0
         else:
             self.train_loss = None
+            self.train_n = None
 
         if self.config.test_loss:
             self.test_loss = 0.0
+            self.test_n = 0
         else:
             self.test_loss = None
+            self.test_n = None
 
     def update_metrics(self, train_or_test: Literal["train", "test"], loss: float):
         if train_or_test == "train" and self.config.test_loss:
             self.train_loss += loss
+            self.train_n += 1
         elif train_or_test == "test" and self.config.train_loss:
             self.test_loss += loss
+            self.test_n += 1
         else:
             raise ValueError
 
     def persist(self):
         if self.config.wandb:
-            wandb.log({k: v for k, v in asdict(self).items() if v is not None and not isinstance(v, LoggingConfig)})
+            wandb.log({"train_loss": self.train_loss / self.train_n, "test_loss": self.test_loss / self.test_n})
         if self.config.local is not None:
             raise NotImplementedError
 
@@ -158,7 +166,9 @@ class LoggingConfig(Config):
         return Log(
             config=self,
             train_loss=0.0 if self.train_loss else None,
+            train_n=0 if self.train_loss else None,
             test_loss=0.0 if self.test_loss else None,
+            test_n=0 if self.test_loss else None,
         )
 
 
